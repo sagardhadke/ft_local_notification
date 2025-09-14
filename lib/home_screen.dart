@@ -16,8 +16,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
-    init();
     super.initState();
+    init();
   }
 
   Future<void> init() async {
@@ -33,7 +33,39 @@ class _MyHomePageState extends State<MyHomePage> {
     const InitializationSettings initializationSettings =
         InitializationSettings(android: androidSettings, iOS: iosSettings);
 
-    await notificationsPlugin.initialize(initializationSettings);
+    await notificationsPlugin.initialize(
+      initializationSettings,
+      // * Additional for Notification tapped
+      onDidReceiveNotificationResponse: (NotificationResponse response) {
+        debugPrint("Notification tapped: ${response.payload}");
+        // * navigation Logic
+      },
+    );
+  }
+
+  // * Instant Notification
+
+  Future<void> instantNotification({
+    required int id,
+    required String title,
+    required String body,
+  }) async {
+    await notificationsPlugin.show(
+      id,
+      title,
+      body,
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'instant_notification_channel_id',
+          'Instant Notification',
+          channelDescription: 'Instant Notification Channel',
+          importance: Importance.max,
+          priority: Priority.high,
+        ),
+        iOS: DarwinNotificationDetails(),
+      ),
+      payload: 'Optional payload data',
+    );
   }
 
   @override
@@ -44,15 +76,35 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text("Local Notification"),
         centerTitle: false,
       ),
-      body: Column(
-        children: [
-          ElevatedButton(onPressed: () {}, child: Text("Instant Notification")),
-          SizedBox(height: 10),
-          ElevatedButton(
-            onPressed: () {},
-            child: Text("Scheduled Notification"),
-          ),
-        ],
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.deepOrange,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () {
+                instantNotification(
+                  id: DateTime.now().millisecond,
+                  title: "Test Instant Notification",
+                  body: "Flutter Local Notification",
+                );
+              },
+              child: Text("Instant Notification"),
+            ),
+            SizedBox(height: 10),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.deepPurple,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () {},
+              child: Text("Scheduled Notification"),
+            ),
+          ],
+        ),
       ),
     );
   }
