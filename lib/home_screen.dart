@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:ft_local_notification/details_screen.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -137,6 +138,20 @@ class _MyHomePageState extends State<MyHomePage> {
                   title: "Scheduled Notification",
                   body: "This notification was scheduled 10 seconds ago",
                   scheduledDate: scheduledDate,
+                );
+              },
+              child: Text("Scheduled Notification"),
+            ),
+            SizedBox(height: 25),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.redAccent,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => MyDetails()),
                 );
               },
               child: Text("Scheduled Notification"),
