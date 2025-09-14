@@ -68,6 +68,34 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  // * Scheduled notifications
+  Future<void> scheduleReminder({
+    required int id,
+    required String title,
+    required String body,
+    required tz.TZDateTime scheduledDate,
+  }) async {
+    await notificationsPlugin.zonedSchedule(
+      id,
+      title,
+      body,
+      scheduledDate,
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'daily_reminder_channel_id',
+          'Daily Reminder',
+          channelDescription: 'Reminder to complete daily habits',
+          importance: Importance.max,
+          priority: Priority.high,
+        ),
+        iOS: DarwinNotificationDetails(),
+      ),
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      // matchDateTimeComponents:
+      //     DateTimeComponents.dayOfWeekAndTime, // or dateAndTime
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -100,7 +128,17 @@ class _MyHomePageState extends State<MyHomePage> {
                 backgroundColor: Colors.deepPurple,
                 foregroundColor: Colors.white,
               ),
-              onPressed: () {},
+              onPressed: () {
+                final scheduledDate = tz.TZDateTime.now(
+                  tz.local,
+                ).add(Duration(seconds: 10));
+                scheduleReminder(
+                  id: DateTime.now().millisecondsSinceEpoch.remainder(100000),
+                  title: "Scheduled Notification",
+                  body: "This notification was scheduled 10 seconds ago",
+                  scheduledDate: scheduledDate,
+                );
+              },
               child: Text("Scheduled Notification"),
             ),
           ],
